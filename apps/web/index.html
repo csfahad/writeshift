@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" class="dark">
+<html lang="en">
     <head>
         <meta charset="UTF-8" />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -22,6 +22,18 @@
             rel="stylesheet"
         />
         <title>WriteShift — Handwriting to Text</title>
+        <script>
+            // apply theme before React loads to prevent flash of wrong theme
+            (function () {
+                var t = localStorage.getItem("writeshift-theme");
+                var dark =
+                    t === "dark" ||
+                    (t !== "light" &&
+                        window.matchMedia("(prefers-color-scheme: dark)")
+                            .matches);
+                if (dark) document.documentElement.classList.add("dark");
+            })();
+        </script>
     </head>
     <body>
         <div id="root"></div>
