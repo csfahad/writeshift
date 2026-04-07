@@ -14,6 +14,13 @@ interface ImagePreviewProps {
     onSettingsChange: (settings: PreprocessSettings) => void;
 }
 
+function sliderBackground(value: number, min: number, max: number): React.CSSProperties {
+    const percent = ((value - min) / (max - min)) * 100;
+    return {
+        background: `linear-gradient(to right, var(--primary) 0%, var(--primary) ${percent}%, var(--muted) ${percent}%, var(--muted) 100%)`,
+    };
+}
+
 export function ImagePreview({
     src,
     settings,
@@ -82,7 +89,8 @@ export function ImagePreview({
                                 brightness: Number(e.target.value),
                             })
                         }
-                        className="w-full h-1.5 bg-muted rounded appearance-none cursor-pointer accent-primary"
+                        className="range-slider"
+                        style={sliderBackground(settings.brightness, 50, 200)}
                     />
                 </div>
 
@@ -105,7 +113,8 @@ export function ImagePreview({
                                 contrast: Number(e.target.value),
                             })
                         }
-                        className="w-full h-1.5 bg-muted rounded appearance-none cursor-pointer accent-primary"
+                        className="range-slider"
+                        style={sliderBackground(settings.contrast, 50, 200)}
                     />
                 </div>
 

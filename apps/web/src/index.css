@@ -295,3 +295,57 @@
 .drop-active {
     animation: drop-pulse 1.2s ease-in-out infinite;
 }
+
+/* Range slider */
+.range-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+    transition: opacity 0.15s;
+}
+.range-slider:hover {
+    opacity: 0.9;
+}
+/* WebKit thumb */
+.range-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--primary);
+    border: 2px solid var(--background);
+    box-shadow: 0 0 0 1px var(--border);
+    cursor: pointer;
+    transition: transform 0.15s ease;
+}
+.range-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+}
+.range-slider::-webkit-slider-thumb:active {
+    transform: scale(1.25);
+}
+/* Firefox thumb */
+.range-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--primary);
+    border: 2px solid var(--background);
+    box-shadow: 0 0 0 1px var(--border);
+    cursor: pointer;
+    transition: transform 0.15s ease;
+}
+.range-slider::-moz-range-thumb:hover {
+    transform: scale(1.15);
+}
+/* Firefox track — transparent so inline gradient shows through */
+.range-slider::-moz-range-track {
+    background: transparent;
+    height: 6px;
+    border-radius: 3px;
+}
