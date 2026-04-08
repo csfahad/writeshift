@@ -158,7 +158,7 @@ export function ResultPanel({
                     />
                 ) : (
                     <div
-                        className="result-text text-foreground"
+                        className="result-text text-foreground text-justify"
                         style={{ fontSize: `${fontSize}px` }}
                         id="result-text-content"
                     >
