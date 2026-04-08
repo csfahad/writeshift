@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import {
     Copy,
     FileDown,
+    FileText,
     Image as ImageIcon,
     Loader2,
 } from "lucide-react";
@@ -13,21 +14,32 @@ interface ExportToolbarProps {
 }
 
 export function ExportToolbar({ text }: ExportToolbarProps) {
-    const { copyToClipboard, exportAsPdf, exportAsJpg, exportingPdf, exportingJpg } =
-        useExport();
+    const {
+        copyToClipboard,
+        exportAsPdf,
+        exportAsJpg,
+        exportAsDocx,
+        exportingPdf,
+        exportingJpg,
+        exportingDocx,
+    } = useExport();
+
+    const timestamp = new Date().toISOString().slice(0, 10);
 
     const handleCopy = () => {
         copyToClipboard(text);
     };
 
     const handlePdf = () => {
-        const timestamp = new Date().toISOString().slice(0, 10);
         exportAsPdf(text, `writeshift-${timestamp}`);
     };
 
     const handleJpg = () => {
-        const timestamp = new Date().toISOString().slice(0, 10);
         exportAsJpg(text, `writeshift-${timestamp}`);
+    };
+
+    const handleDocx = () => {
+        exportAsDocx(text, `writeshift-${timestamp}`);
     };
 
     return (
@@ -60,6 +72,21 @@ export function ExportToolbar({ text }: ExportToolbarProps) {
                         <FileDown className="w-3.5 h-3.5 mr-1.5" />
                     )}
                     PDF
+                </Button>
+
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleDocx}
+                    disabled={exportingDocx}
+                    className="h-8 text-xs"
+                >
+                    {exportingDocx ? (
+                        <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+                    ) : (
+                        <FileText className="w-3.5 h-3.5 mr-1.5" />
+                    )}
+                    DOCX
                 </Button>
 
                 <Button
