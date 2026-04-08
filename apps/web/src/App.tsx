@@ -111,8 +111,8 @@ function App() {
                         Convert Handwriting to Text
                     </h2>
                     <p className="text-sm text-muted-foreground mt-1">
-                        Upload a handwritten image — get clean, editable, exportable typed
-                        text. Supports English &amp; Hindi.
+                        Upload a handwritten image or PDF - get clean, editable, exportable
+                        typed text. Supports English &amp; Hindi.
                     </p>
                 </div>
 
@@ -125,7 +125,7 @@ function App() {
                             onRemove={handleRemoveFile}
                         />
 
-                        {previewUrl && (
+                        {previewUrl && file && !file.type.includes("pdf") && (
                             <ImagePreview
                                 src={previewUrl}
                                 settings={preprocessSettings}
