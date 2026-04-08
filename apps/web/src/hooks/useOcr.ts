@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef } from "react";
+import { formatExtractedText } from "@/utils/formatText";
 
 interface OcrResult {
     text: string;
@@ -41,25 +42,34 @@ export function useOcr() {
                     const data = await response.json().catch(() => ({}));
                     throw new Error(
                         (data as any).error ||
-                            `Server error (${response.status})`,
+                            `Server error (${response.status})`
                     );
                 }
 
                 const data = (await response.json()) as OcrResult;
 
-                if (!data.text || data.text.trim().length === 0) {
+                const finalResult: OcrResult = {
+                    ...data,
+                    text: formatExtractedText(data.text),
+                };
+
+                if (
+                    !finalResult.text ||
+                    finalResult.text.trim().length === 0
+                ) {
                     throw new Error(
-                        "No text detected in the image. Try uploading a clearer image with visible handwriting.",
+                        "No text detected. Try uploading a clearer image with visible handwriting."
                     );
                 }
 
-                setResult(data);
-                return data;
+                setResult(finalResult);
+                return finalResult;
             } catch (err: any) {
                 if (err.name === "AbortError") return null;
 
                 const message =
-                    err.message || "Failed to process image. Please try again.";
+                    err.message ||
+                    "Failed to process file. Please try again.";
                 setError(message);
                 return null;
             } finally {
@@ -67,7 +77,7 @@ export function useOcr() {
                 abortRef.current = null;
             }
         },
-        [],
+        []
     );
 
     const reset = useCallback(() => {
