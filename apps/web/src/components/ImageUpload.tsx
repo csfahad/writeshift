@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-import { Upload, X, FileImage, ClipboardPaste } from "lucide-react";
+import { Upload, X, FileImage, FileText, ClipboardPaste } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -9,6 +9,10 @@ interface ImageUploadProps {
     onFileSelect: (file: File) => void;
     file: File | null;
     onRemove: () => void;
+}
+
+function isPdf(file: File): boolean {
+    return file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
 }
 
 export function ImageUpload({ onFileSelect, file, onRemove }: ImageUploadProps) {
@@ -26,15 +30,16 @@ export function ImageUpload({ onFileSelect, file, onRemove }: ImageUploadProps) 
             "image/jpeg": [".jpg", ".jpeg"],
             "image/png": [".png"],
             "image/webp": [".webp"],
+            "application/pdf": [".pdf"],
         },
-        maxSize: 10 * 1024 * 1024,
+        maxSize: 20 * 1024 * 1024,
         multiple: false,
         onDropRejected: (rejections) => {
             const error = rejections[0]?.errors[0];
             if (error?.code === "file-too-large") {
-                toast.error("File is too large. Maximum size is 10MB.");
+                toast.error("File is too large. Maximum size is 20MB.");
             } else if (error?.code === "file-invalid-type") {
-                toast.error("Invalid file type. Please upload JPEG, PNG, or WebP.");
+                toast.error("Invalid file type. Please upload JPEG, PNG, WebP, or PDF.");
             }
         },
     });
@@ -64,18 +69,21 @@ export function ImageUpload({ onFileSelect, file, onRemove }: ImageUploadProps) 
     }, [onFileSelect]);
 
     if (file) {
+        const fileIsPdf = isPdf(file);
+        const FileIcon = fileIsPdf ? FileText : FileImage;
+        const fileExt = fileIsPdf ? "PDF" : file.type.split("/")[1]?.toUpperCase();
+
         return (
             <Card className="p-4">
                 <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3 min-w-0">
                         <div className="w-10 h-10 bg-muted flex items-center justify-center border border-border shrink-0">
-                            <FileImage className="w-5 h-5 text-muted-foreground" />
+                            <FileIcon className="w-5 h-5 text-muted-foreground" />
                         </div>
                         <div className="min-w-0">
                             <p className="text-sm font-medium truncate">{file.name}</p>
                             <p className="text-xs text-muted-foreground">
-                                {(file.size / 1024 / 1024).toFixed(2)} MB ·{" "}
-                                {file.type.split("/")[1]?.toUpperCase()}
+                                {(file.size / 1024 / 1024).toFixed(2)} MB · {fileExt}
                             </p>
                         </div>
                     </div>
@@ -123,11 +131,11 @@ export function ImageUpload({ onFileSelect, file, onRemove }: ImageUploadProps) 
                 <div className="text-center">
                     <p className="text-sm font-medium">
                         {isDragActive
-                            ? "Drop your image here"
-                            : "Drag & drop your handwritten image"}
+                            ? "Drop your file here"
+                            : "Drag & drop your handwritten image or PDF"}
                     </p>
                     <p className="text-xs text-muted-foreground mt-1">
-                        JPEG, PNG, or WebP · Max 10MB
+                        JPEG, PNG, WEBP or PDF · Max 20MB
                     </p>
                 </div>
             </div>
