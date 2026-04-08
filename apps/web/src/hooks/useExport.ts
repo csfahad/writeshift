@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { toast } from "sonner";
+import { formatExtractedText } from "@/utils/formatText";
 
 const SCALE = 2;
 const FONT_SIZE = 14;
@@ -14,48 +15,102 @@ const PADDING = 40;
 const CONTENT_WIDTH = A4_WIDTH_PX - PADDING * 2;
 const LINE_HEIGHT = FONT_SIZE * 1.7;
 
-function wrapText(
+interface WrappedLine {
+    text: string;
+    words: string[];
+    isLastInParagraph: boolean;
+}
+
+function wrapTextJustified(
     ctx: CanvasRenderingContext2D,
     text: string,
     maxWidth: number,
-): string[] {
-    const result: string[] = [];
+): WrappedLine[] {
+    const result: WrappedLine[] = [];
     const paragraphs = text.split("\n");
 
     for (const paragraph of paragraphs) {
         if (paragraph.trim() === "") {
-            result.push("");
+            result.push({ text: "", words: [], isLastInParagraph: true });
             continue;
         }
 
-        const words = paragraph.split(/\s+/);
-        let currentLine = "";
+        const words = paragraph.split(/\s+/).filter(Boolean);
+        let currentWords: string[] = [];
+        let currentWidth = 0;
+        const spaceWidth = ctx.measureText(" ").width;
 
         for (const word of words) {
-            const testLine = currentLine ? `${currentLine} ${word}` : word;
-            const width = ctx.measureText(testLine).width;
+            const wordWidth = ctx.measureText(word).width;
+            const testWidth =
+                currentWords.length > 0
+                    ? currentWidth + spaceWidth + wordWidth
+                    : wordWidth;
 
-            if (width > maxWidth && currentLine) {
-                result.push(currentLine);
-                currentLine = word;
+            if (testWidth > maxWidth && currentWords.length > 0) {
+                result.push({
+                    text: currentWords.join(" "),
+                    words: [...currentWords],
+                    isLastInParagraph: false,
+                });
+                currentWords = [word];
+                currentWidth = wordWidth;
             } else {
-                currentLine = testLine;
+                currentWords.push(word);
+                currentWidth = testWidth;
             }
         }
 
-        if (currentLine) {
-            result.push(currentLine);
+        if (currentWords.length > 0) {
+            result.push({
+                text: currentWords.join(" "),
+                words: currentWords,
+                isLastInParagraph: true,
+            });
         }
     }
 
     return result;
 }
 
+function drawJustifiedLine(
+    ctx: CanvasRenderingContext2D,
+    line: WrappedLine,
+    x: number,
+    y: number,
+    maxWidth: number,
+) {
+    if (
+        line.words.length === 0 ||
+        line.isLastInParagraph ||
+        line.words.length === 1
+    ) {
+        // Left-align: empty lines, single words, and last line of paragraphs
+        ctx.fillText(line.text, x, y);
+        return;
+    }
+
+    // Calculate total word width
+    let totalWordWidth = 0;
+    for (const word of line.words) {
+        totalWordWidth += ctx.measureText(word).width;
+    }
+
+    // Distribute remaining space evenly between words
+    const totalSpaces = line.words.length - 1;
+    const spaceWidth = (maxWidth - totalWordWidth) / totalSpaces;
+
+    let curX = x;
+    for (let i = 0; i < line.words.length; i++) {
+        ctx.fillText(line.words[i]!, curX, y);
+        curX += ctx.measureText(line.words[i]!).width + spaceWidth;
+    }
+}
+
 function renderPage(
-    lines: string[],
+    lines: WrappedLine[],
     pageNum: number,
     totalPages: number,
-    title: string,
 ): HTMLCanvasElement {
     const canvas = document.createElement("canvas");
     canvas.width = A4_WIDTH_PX * SCALE;
@@ -79,7 +134,7 @@ function renderPage(
     ctx.fillText(dateStr, A4_WIDTH_PX - PADDING - dateW, y);
     y += 18;
 
-    // Header Separator line
+    // Header separator
     ctx.strokeStyle = "#e0e0e0";
     ctx.lineWidth = 1;
     ctx.beginPath();
@@ -88,20 +143,16 @@ function renderPage(
     ctx.stroke();
     y += 14;
 
-    // Body text
+    // Body text — justified
     ctx.font = `${FONT_SIZE}px ${FONT_FAMILY}`;
     ctx.fillStyle = "#1a1a1a";
 
     for (const line of lines) {
-        ctx.fillText(line, PADDING, y);
+        drawJustifiedLine(ctx, line, PADDING, y, CONTENT_WIDTH);
         y += LINE_HEIGHT;
     }
 
-    // Footer
-    const pageLabel = `Page ${pageNum} of ${totalPages}`;
-    const pageLabelW = ctx.measureText(pageLabel).width;
-
-    // Footer separator line
+    // Footer separator
     const footerSepY = A4_HEIGHT_PX - PADDING - 4;
     ctx.strokeStyle = "#e0e0e0";
     ctx.lineWidth = 1;
@@ -110,15 +161,16 @@ function renderPage(
     ctx.lineTo(A4_WIDTH_PX - PADDING, footerSepY);
     ctx.stroke();
 
+    // Footer text
     ctx.font = FOOTER_FONT;
     ctx.fillStyle = "#bbbbbb";
-
+    const pageLabel = `Page ${pageNum} of ${totalPages}`;
+    const pageLabelW = ctx.measureText(pageLabel).width;
     ctx.fillText(
         pageLabel,
         A4_WIDTH_PX - PADDING - pageLabelW,
         A4_HEIGHT_PX - PADDING + 10,
     );
-
     const footerText = "writeshift.csfahad.me";
     const footerW = ctx.measureText(footerText).width;
     ctx.fillText(
@@ -130,37 +182,27 @@ function renderPage(
     return canvas;
 }
 
-// split lines into pages
-function paginateLines(lines: string[]): string[][] {
-    const pages: string[][] = [];
-
-    const FIRST_PAGE_HEADER = 18 + 14; // header + spacing
-    const OTHER_PAGE_HEADER = 18 + 14;
+function paginateLines(lines: WrappedLine[]): WrappedLine[][] {
+    const pages: WrappedLine[][] = [];
+    const PAGE_HEADER = 18 + 14;
     const FOOTER_SPACE = 10;
-
-    const firstPageLines = Math.floor(
-        (A4_HEIGHT_PX - PADDING * 2 - FIRST_PAGE_HEADER - FOOTER_SPACE) /
-            LINE_HEIGHT,
-    );
-    const otherPageLines = Math.floor(
-        (A4_HEIGHT_PX - PADDING * 2 - OTHER_PAGE_HEADER - FOOTER_SPACE) /
-            LINE_HEIGHT,
+    const linesPerPage = Math.floor(
+        (A4_HEIGHT_PX - PADDING * 2 - PAGE_HEADER - FOOTER_SPACE) / LINE_HEIGHT,
     );
 
-    // First page
-    pages.push(lines.slice(0, firstPageLines));
-
-    // Remaining pages
-    let offset = firstPageLines;
+    let offset = 0;
     while (offset < lines.length) {
-        pages.push(lines.slice(offset, offset + otherPageLines));
-        offset += otherPageLines;
+        pages.push(lines.slice(offset, offset + linesPerPage));
+        offset += linesPerPage;
     }
+
+    // always have at least one page
+    if (pages.length === 0) pages.push([]);
 
     return pages;
 }
 
-// Single-image JPG canvas (no pagination)
+// JPG canvas
 function renderJpgCanvas(text: string): HTMLCanvasElement {
     const JPG_WIDTH = 800;
     const JPG_PADDING = 48;
@@ -170,7 +212,7 @@ function renderJpgCanvas(text: string): HTMLCanvasElement {
     const measureCanvas = document.createElement("canvas");
     const measureCtx = measureCanvas.getContext("2d")!;
     measureCtx.font = `${FONT_SIZE}px ${FONT_FAMILY}`;
-    const wrappedLines = wrapText(measureCtx, text, JPG_CONTENT_W);
+    const wrappedLines = wrapTextJustified(measureCtx, text, JPG_CONTENT_W);
 
     const HEADER_H = 40;
     const FOOTER_H = 50;
@@ -183,7 +225,6 @@ function renderJpgCanvas(text: string): HTMLCanvasElement {
     const ctx = canvas.getContext("2d")!;
     ctx.scale(SCALE, SCALE);
 
-    // Background
     ctx.fillStyle = "#ffffff";
     ctx.fillRect(0, 0, JPG_WIDTH, TOTAL_H);
     ctx.textBaseline = "top";
@@ -206,11 +247,11 @@ function renderJpgCanvas(text: string): HTMLCanvasElement {
     ctx.stroke();
     y += HEADER_H - 20;
 
-    // Body
+    // Body — justified
     ctx.font = `${FONT_SIZE}px ${FONT_FAMILY}`;
     ctx.fillStyle = "#1a1a1a";
     for (const line of wrappedLines) {
-        ctx.fillText(line, JPG_PADDING, y);
+        drawJustifiedLine(ctx, line, JPG_PADDING, y, JPG_CONTENT_W);
         y += JPG_LINE_HEIGHT;
     }
 
@@ -234,6 +275,7 @@ function renderJpgCanvas(text: string): HTMLCanvasElement {
 export function useExport() {
     const [exportingPdf, setExportingPdf] = useState(false);
     const [exportingJpg, setExportingJpg] = useState(false);
+    const [exportingDocx, setExportingDocx] = useState(false);
 
     const copyToClipboard = useCallback(async (text: string) => {
         try {
@@ -255,21 +297,22 @@ export function useExport() {
     const exportAsPdf = useCallback(async (text: string, title?: string) => {
         setExportingPdf(true);
         try {
+            const formatted = formatExtractedText(text);
             const pdfTitle = title || "WriteShift Export";
-
             const { jsPDF } = await import("jspdf");
 
-            // 1. Measure & wrap text using Canvas 2D (browser handles Devanagari shaping)
             const measureCanvas = document.createElement("canvas");
             const measureCtx = measureCanvas.getContext("2d")!;
             measureCtx.font = `${FONT_SIZE}px ${FONT_FAMILY}`;
-            const allLines = wrapText(measureCtx, text, CONTENT_WIDTH);
+            const allLines = wrapTextJustified(
+                measureCtx,
+                formatted,
+                CONTENT_WIDTH,
+            );
 
-            // 2. Split into page groups
             const pageGroups = paginateLines(allLines);
             const totalPages = pageGroups.length;
 
-            // 3. Create jsPDF document
             const doc = new jsPDF({
                 orientation: "portrait",
                 unit: "mm",
@@ -278,23 +321,17 @@ export function useExport() {
             const pdfW = doc.internal.pageSize.getWidth();
             const pdfH = doc.internal.pageSize.getHeight();
 
-            // 4. For each page: render canvas → insert as image
             for (let i = 0; i < pageGroups.length; i++) {
                 if (i > 0) doc.addPage();
-
                 const pageCanvas = renderPage(
                     pageGroups[i]!,
                     i + 1,
                     totalPages,
-                    pdfTitle,
                 );
-
                 const imgData = pageCanvas.toDataURL("image/jpeg", 0.95);
-
                 doc.addImage(imgData, "JPEG", 0, 0, pdfW, pdfH);
             }
 
-            // 5. Download
             doc.save(`${pdfTitle}.pdf`);
             toast.success("PDF downloaded successfully");
         } catch (err: any) {
@@ -308,7 +345,8 @@ export function useExport() {
     const exportAsJpg = useCallback(async (text: string, filename?: string) => {
         setExportingJpg(true);
         try {
-            const canvas = renderJpgCanvas(text);
+            const formatted = formatExtractedText(text);
+            const canvas = renderJpgCanvas(formatted);
             const link = document.createElement("a");
             link.download = `${filename || "writeshift-export"}.jpg`;
             link.href = canvas.toDataURL("image/jpeg", 0.95);
@@ -323,11 +361,126 @@ export function useExport() {
         }
     }, []);
 
+    const exportAsDocx = useCallback(async (text: string, title?: string) => {
+        setExportingDocx(true);
+        try {
+            const formatted = formatExtractedText(text);
+            const docxTitle = title || "WriteShift Export";
+
+            const {
+                Document,
+                Paragraph,
+                TextRun,
+                Header,
+                Footer,
+                AlignmentType,
+                Packer,
+                PageNumber,
+                NumberFormat,
+            } = await import("docx");
+            const { saveAs } = await import("file-saver");
+
+            const paragraphs = formatted.split("\n");
+            const docParagraphs = paragraphs.map(
+                (p) =>
+                    new Paragraph({
+                        alignment: AlignmentType.JUSTIFIED,
+                        spacing: {
+                            after: p.trim() === "" ? 200 : 120,
+                            line: 360,
+                        },
+                        children: [
+                            new TextRun({
+                                text: p,
+                                font: "Noto Sans Devanagari",
+                                size: 24, // 12pt in half-points
+                            }),
+                        ],
+                    }),
+            );
+
+            const doc = new Document({
+                creator: "WriteShift",
+                description: "Generated by WriteShift — Handwriting to Text",
+                sections: [
+                    {
+                        properties: {
+                            page: {
+                                margin: {
+                                    top: 1440, // 1 inch = 1440 twips
+                                    bottom: 1440,
+                                    left: 1440,
+                                    right: 1440,
+                                },
+                                pageNumbers: {
+                                    start: 1,
+                                    formatType: NumberFormat.DECIMAL,
+                                },
+                            },
+                        },
+                        headers: {
+                            default: new Header({
+                                children: [
+                                    new Paragraph({
+                                        alignment: AlignmentType.CENTER,
+                                        children: [
+                                            new TextRun({
+                                                text: "Generated by WriteShift",
+                                                font: "Arial",
+                                                size: 16, // 8pt
+                                                color: "999999",
+                                            }),
+                                        ],
+                                    }),
+                                ],
+                            }),
+                        },
+                        footers: {
+                            default: new Footer({
+                                children: [
+                                    new Paragraph({
+                                        alignment: AlignmentType.CENTER,
+                                        children: [
+                                            new TextRun({
+                                                text: "writeshift.csfahad.me · Page ",
+                                                font: "Arial",
+                                                size: 14, // 7pt
+                                                color: "BBBBBB",
+                                            }),
+                                            new TextRun({
+                                                children: [PageNumber.CURRENT],
+                                                font: "Arial",
+                                                size: 14,
+                                                color: "BBBBBB",
+                                            }),
+                                        ],
+                                    }),
+                                ],
+                            }),
+                        },
+                        children: [...docParagraphs],
+                    },
+                ],
+            });
+
+            const blob = await Packer.toBlob(doc);
+            saveAs(blob, `${docxTitle}.docx`);
+            toast.success("DOCX downloaded successfully");
+        } catch (err: any) {
+            console.error("DOCX export error:", err);
+            toast.error(err.message || "Failed to export DOCX");
+        } finally {
+            setExportingDocx(false);
+        }
+    }, []);
+
     return {
         copyToClipboard,
         exportAsPdf,
         exportAsJpg,
+        exportAsDocx,
         exportingPdf,
         exportingJpg,
+        exportingDocx,
     };
 }
