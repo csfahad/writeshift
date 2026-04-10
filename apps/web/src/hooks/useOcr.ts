@@ -1,6 +1,8 @@
 import { useState, useCallback, useRef } from "react";
 import { formatExtractedText } from "@/utils/formatText";
 
+const API_URL = import.meta.env.VITE_API_URL!;
+
 interface OcrResult {
     text: string;
     confidence: number;
@@ -32,7 +34,7 @@ export function useOcr() {
                 formData.append("image", file);
                 formData.append("language", language);
 
-                const response = await fetch("/api/ocr", {
+                const response = await fetch(`${API_URL}/api/ocr`, {
                     method: "POST",
                     body: formData,
                     signal: controller.signal,
@@ -42,7 +44,7 @@ export function useOcr() {
                     const data = await response.json().catch(() => ({}));
                     throw new Error(
                         (data as any).error ||
-                            `Server error (${response.status})`
+                            `Server error (${response.status})`,
                     );
                 }
 
@@ -53,12 +55,9 @@ export function useOcr() {
                     text: formatExtractedText(data.text),
                 };
 
-                if (
-                    !finalResult.text ||
-                    finalResult.text.trim().length === 0
-                ) {
+                if (!finalResult.text || finalResult.text.trim().length === 0) {
                     throw new Error(
-                        "No text detected. Try uploading a clearer image with visible handwriting."
+                        "No text detected. Try uploading a clearer image with visible handwriting.",
                     );
                 }
 
@@ -68,8 +67,7 @@ export function useOcr() {
                 if (err.name === "AbortError") return null;
 
                 const message =
-                    err.message ||
-                    "Failed to process file. Please try again.";
+                    err.message || "Failed to process file. Please try again.";
                 setError(message);
                 return null;
             } finally {
@@ -77,7 +75,7 @@ export function useOcr() {
                 abortRef.current = null;
             }
         },
-        []
+        [],
     );
 
     const reset = useCallback(() => {
