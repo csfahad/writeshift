@@ -243,13 +243,11 @@
     animation: shimmer 1.8s ease-in-out infinite;
 }
 
-/* Devanagari text rendering */
 .text-devanagari {
     font-family: "Noto Sans Devanagari", "Noto Serif", var(--font-sans);
     line-height: 1.8;
 }
 
-/* Result text area */
 .result-text {
     font-family: "Noto Sans Devanagari", "Noto Serif", var(--font-sans);
     font-size: inherit;
@@ -343,9 +341,146 @@
 .range-slider::-moz-range-thumb:hover {
     transform: scale(1.15);
 }
-/* Firefox track — transparent so inline gradient shows through */
+/* Firefox track */
 .range-slider::-moz-range-track {
     background: transparent;
     height: 6px;
     border-radius: 3px;
+}
+
+/* Tiptap Editor */
+.tiptap {
+    outline: none;
+    font-family: "Noto Sans Devanagari", "Noto Serif", var(--font-sans);
+    line-height: 1.8;
+    word-break: break-word;
+    text-align: justify;
+    color: var(--foreground);
+}
+
+.tiptap:focus {
+    outline: none;
+}
+
+/* Paragraphs */
+.tiptap p {
+    margin-bottom: 0.75em;
+}
+
+.tiptap p:last-child {
+    margin-bottom: 0;
+}
+
+/* Headings */
+.tiptap h1 {
+    font-size: 1.75em;
+    font-weight: 700;
+    margin-bottom: 0.5em;
+    margin-top: 0.75em;
+    line-height: 1.3;
+}
+
+.tiptap h2 {
+    font-size: 1.35em;
+    font-weight: 600;
+    margin-bottom: 0.4em;
+    margin-top: 0.6em;
+    line-height: 1.35;
+}
+
+.tiptap h3 {
+    font-size: 1.15em;
+    font-weight: 600;
+    margin-bottom: 0.3em;
+    margin-top: 0.5em;
+    line-height: 1.4;
+}
+
+/* Lists */
+.tiptap ul,
+.tiptap ol {
+    padding-left: 1.5em;
+    margin-bottom: 0.75em;
+}
+
+.tiptap ul {
+    list-style-type: disc;
+}
+
+.tiptap ol {
+    list-style-type: decimal;
+}
+
+.tiptap li {
+    margin-bottom: 0.25em;
+}
+
+.tiptap li p {
+    margin-bottom: 0.15em;
+}
+
+/* Blockquote */
+.tiptap blockquote {
+    border-left: 3px solid var(--border);
+    padding-left: 1em;
+    margin-left: 0;
+    margin-bottom: 0.75em;
+    color: var(--muted-foreground);
+    font-style: italic;
+}
+
+/* Code */
+.tiptap code {
+    background: var(--muted);
+    padding: 0.15em 0.35em;
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+}
+
+.tiptap pre {
+    background: var(--muted);
+    padding: 0.75em 1em;
+    margin-bottom: 0.75em;
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+}
+
+.tiptap pre code {
+    background: none;
+    padding: 0;
+}
+
+/* Horizontal rule */
+.tiptap hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 1em 0;
+}
+
+/* Placeholder */
+.tiptap p.is-editor-empty:first-child::before {
+    content: attr(data-placeholder);
+    float: left;
+    color: var(--muted-foreground);
+    pointer-events: none;
+    height: 0;
+    opacity: 0.5;
+}
+
+/* Bold / Italic / Underline / Strike */
+.tiptap strong {
+    font-weight: 700;
+}
+
+.tiptap em {
+    font-style: italic;
+}
+
+.tiptap u {
+    text-decoration: underline;
+}
+
+.tiptap s {
+    text-decoration: line-through;
 }
