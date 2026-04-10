@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { toast } from "sonner";
-import { formatExtractedText } from "@/utils/formatText";
+import { cleanForExport } from "@/utils/formatText";
 
 const SCALE = 2;
 const FONT_SIZE = 14;
@@ -85,18 +85,17 @@ function drawJustifiedLine(
         line.isLastInParagraph ||
         line.words.length === 1
     ) {
-        // Left-align: empty lines, single words, and last line of paragraphs
+        // left-align: empty lines, single words, and last line of paragraphs
         ctx.fillText(line.text, x, y);
         return;
     }
 
-    // Calculate total word width
     let totalWordWidth = 0;
     for (const word of line.words) {
         totalWordWidth += ctx.measureText(word).width;
     }
 
-    // Distribute remaining space evenly between words
+    // distribute remaining space evenly between words
     const totalSpaces = line.words.length - 1;
     const spaceWidth = (maxWidth - totalWordWidth) / totalSpaces;
 
@@ -143,7 +142,7 @@ function renderPage(
     ctx.stroke();
     y += 14;
 
-    // Body text — justified
+    // Body
     ctx.font = `${FONT_SIZE}px ${FONT_FAMILY}`;
     ctx.fillStyle = "#1a1a1a";
 
@@ -161,7 +160,7 @@ function renderPage(
     ctx.lineTo(A4_WIDTH_PX - PADDING, footerSepY);
     ctx.stroke();
 
-    // Footer text
+    // Footer
     ctx.font = FOOTER_FONT;
     ctx.fillStyle = "#bbbbbb";
     const pageLabel = `Page ${pageNum} of ${totalPages}`;
@@ -247,7 +246,7 @@ function renderJpgCanvas(text: string): HTMLCanvasElement {
     ctx.stroke();
     y += HEADER_H - 20;
 
-    // Body — justified
+    // Body
     ctx.font = `${FONT_SIZE}px ${FONT_FAMILY}`;
     ctx.fillStyle = "#1a1a1a";
     for (const line of wrappedLines) {
@@ -297,7 +296,7 @@ export function useExport() {
     const exportAsPdf = useCallback(async (text: string, title?: string) => {
         setExportingPdf(true);
         try {
-            const formatted = formatExtractedText(text);
+            const formatted = cleanForExport(text);
             const pdfTitle = title || "WriteShift Export";
             const { jsPDF } = await import("jspdf");
 
@@ -345,7 +344,7 @@ export function useExport() {
     const exportAsJpg = useCallback(async (text: string, filename?: string) => {
         setExportingJpg(true);
         try {
-            const formatted = formatExtractedText(text);
+            const formatted = cleanForExport(text);
             const canvas = renderJpgCanvas(formatted);
             const link = document.createElement("a");
             link.download = `${filename || "writeshift-export"}.jpg`;
@@ -364,7 +363,7 @@ export function useExport() {
     const exportAsDocx = useCallback(async (text: string, title?: string) => {
         setExportingDocx(true);
         try {
-            const formatted = formatExtractedText(text);
+            const formatted = cleanForExport(text);
             const docxTitle = title || "WriteShift Export";
 
             const {
