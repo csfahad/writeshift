@@ -203,7 +203,7 @@ function parseFullTextAnnotation(fullTextAnnotation: any): VisionResult {
                                             breakType === "EOL_SURE_SPACE" ||
                                             breakType === "LINE_BREAK"
                                         )
-                                            suffix = "\n";
+                                            suffix = " ";
                                         return s.text + suffix;
                                     })
                                     .join("") || "",
@@ -218,7 +218,7 @@ function parseFullTextAnnotation(fullTextAnnotation: any): VisionResult {
     }
 
     return {
-        text: fullTextAnnotation.text || "",
+        text: paragraphs.join("\n\n"),
         confidence: Math.round(confidence * 100),
         detectedLanguage,
         paragraphs,
