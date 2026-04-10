@@ -27,9 +27,14 @@ export function ProcessButton({
             ) : (
                 <>
                     Extract Text
-                    <kbd className="ml-3 hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-mono bg-primary-foreground/20 border border-primary-foreground/20">
-                        ⌘↵
-                    </kbd>
+                    <span className="ml-3 hidden sm:flex items-center gap-1 opacity-80">
+                        <kbd className="inline-flex h-5 min-w-[20px] items-center justify-center rounded border border-primary-foreground/30 bg-primary-foreground/20 px-1 font-sans text-[12px] font-medium">
+                            ⌘
+                        </kbd>
+                        <kbd className="inline-flex h-5 items-center justify-center rounded border border-primary-foreground/30 bg-primary-foreground/20 px-1.5 font-sans text-[10px] font-medium uppercase">
+                            ↵
+                        </kbd>
+                    </span>
                 </>
             )}
         </Button>

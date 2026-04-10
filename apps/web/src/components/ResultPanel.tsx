@@ -112,25 +112,25 @@ function EditorToolbar({ editor }: { editor: Editor }) {
                 icon={Bold}
                 isActive={editor.isActive("bold")}
                 onClick={() => editor.chain().focus().toggleBold().run()}
-                title="Bold (Ctrl+B)"
+                title="Bold (Ctrl/⌘+B)"
             />
             <ToolbarBtn
                 icon={Italic}
                 isActive={editor.isActive("italic")}
                 onClick={() => editor.chain().focus().toggleItalic().run()}
-                title="Italic (Ctrl+I)"
+                title="Italic (Ctrl/⌘+I)"
             />
             <ToolbarBtn
                 icon={UnderlineIcon}
                 isActive={editor.isActive("underline")}
                 onClick={() => editor.chain().focus().toggleUnderline().run()}
-                title="Underline (Ctrl+U)"
+                title="Underline (Ctrl/⌘+U)"
             />
             <ToolbarBtn
                 icon={Strikethrough}
                 isActive={editor.isActive("strike")}
                 onClick={() => editor.chain().focus().toggleStrike().run()}
-                title="Strikethrough"
+                title="Strikethrough (Ctrl/⌘+⇧+S)"
             />
 
             <ToolbarSep />
