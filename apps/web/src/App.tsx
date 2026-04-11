@@ -169,8 +169,8 @@ function App() {
 
             {/* Footer */}
             <footer className="border-t border-border py-4 mt-auto no-print">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between text-xs text-muted-foreground">
-                    <span>WriteShift · Handwriting to Text</span>
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-center md:justify-between text-xs text-muted-foreground">
+                    <span className="hidden md:inline">WriteShift · Handwriting to Text</span>
                     <span>
                         © {new Date().getFullYear()} WriteShift. All rights reserved.
                     </span>
