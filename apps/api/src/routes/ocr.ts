@@ -1,8 +1,18 @@
 import { Router } from "express";
 import multer from "multer";
 import { ocrLimiter } from "../middleware/rateLimiter";
+import { optionalClerkAuth } from "../middleware/clerkAuth";
 import { detectText, detectTextFromPdf } from "../services/vision";
 import { preprocessImage } from "../services/imagePreprocess";
+import { formatExtractedText } from "../utils/formatText";
+import { getDb } from "../db";
+import {
+    getGuestSuccessCount,
+    guestOcrLimit,
+    incrementGuestSuccess,
+} from "../services/guestUsage";
+import { saveOcrJob } from "../services/ocrPersistence";
+import { isValidGuestId } from "./guestStatus";
 
 const MAX_PDF_PAGES = 20;
 
@@ -32,6 +42,7 @@ export const ocrRouter = Router();
 
 ocrRouter.post(
     "/",
+    optionalClerkAuth,
     ocrLimiter,
     upload.single("image"),
     async (req, res, next) => {
@@ -44,6 +55,36 @@ ocrRouter.post(
             const language = (req.body.language as string) || "auto";
             const languageHints = buildLanguageHints(language);
             const isPdf = req.file.mimetype === "application/pdf";
+
+            let guestId: string | null = null;
+            if (!req.auth?.userId) {
+                const raw = req.headers["x-guest-id"];
+                const id =
+                    typeof raw === "string"
+                        ? raw
+                        : Array.isArray(raw)
+                          ? raw[0]
+                          : "";
+                if (!id || !isValidGuestId(id)) {
+                    res.status(400).json({
+                        error: "Sign in or send a valid X-Guest-Id header (UUID) for free tries.",
+                        code: "GUEST_ID_REQUIRED",
+                    });
+                    return;
+                }
+                guestId = id;
+                const db = getDb();
+                const used = await getGuestSuccessCount(db, guestId);
+                if (used >= guestOcrLimit()) {
+                    res.status(403).json({
+                        error: "Free OCR limit reached. Sign in to continue.",
+                        code: "GUEST_LIMIT",
+                    });
+                    return;
+                }
+            }
+
+            let rawResult: Awaited<ReturnType<typeof detectText>>;
 
             if (isPdf) {
                 const pdfBuffer = req.file.buffer;
@@ -64,13 +105,11 @@ ocrRouter.post(
                 }
 
                 const base64Pdf = pdfBuffer.toString("base64");
-                const result = await detectTextFromPdf(
+                rawResult = await detectTextFromPdf(
                     base64Pdf,
                     totalPages,
                     languageHints,
                 );
-
-                res.json(result);
             } else {
                 const skipPreprocess = req.body.skipPreprocess === "true";
                 const imageBuffer = skipPreprocess
@@ -78,10 +117,36 @@ ocrRouter.post(
                     : await preprocessImage(req.file.buffer);
 
                 const base64Image = imageBuffer.toString("base64");
-                const result = await detectText(base64Image, languageHints);
-
-                res.json(result);
+                rawResult = await detectText(base64Image, languageHints);
             }
+
+            const formattedText = formatExtractedText(rawResult.text);
+            const result = {
+                ...rawResult,
+                text: formattedText,
+            };
+
+            const success = formattedText.trim().length > 0;
+
+            if (success) {
+                const db = getDb();
+                if (req.auth?.userId) {
+                    await saveOcrJob(
+                        db,
+                        req.auth.userId,
+                        {
+                            originalFilename: req.file.originalname || "upload",
+                            mimeType: req.file.mimetype,
+                            language,
+                        },
+                        result,
+                    );
+                } else if (guestId) {
+                    await incrementGuestSuccess(db, guestId);
+                }
+            }
+
+            res.json(result);
         } catch (error) {
             next(error);
         }
