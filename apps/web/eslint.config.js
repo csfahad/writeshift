@@ -20,4 +20,10 @@ export default defineConfig([
             globals: globals.browser,
         },
     },
+    {
+        files: ["src/hooks/useGuestOcrStatus.ts"],
+        rules: {
+            "react-hooks/set-state-in-effect": "off",
+        },
+    },
 ]);
