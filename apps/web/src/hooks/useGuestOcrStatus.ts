@@ -38,13 +38,16 @@ export function useGuestOcrStatus(
                 setStatus(null);
                 return;
             }
-            if (data.mode === "guest" && data.limit != null && data.used != null) {
+            if (
+                data.mode === "guest" &&
+                data.limit != null &&
+                data.used != null
+            ) {
                 setStatus({
                     limit: data.limit,
                     used: data.used,
                     remaining:
-                        data.remaining ??
-                        Math.max(0, data.limit - data.used),
+                        data.remaining ?? Math.max(0, data.limit - data.used),
                 });
                 setError(null);
             } else {
