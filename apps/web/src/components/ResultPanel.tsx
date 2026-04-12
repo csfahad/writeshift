@@ -29,6 +29,7 @@ import {
     Redo2,
 } from "lucide-react";
 import type { Editor } from "@tiptap/react";
+import type { ReactNode } from "react";
 
 interface ResultPanelProps {
     text: string;
@@ -40,6 +41,7 @@ interface ResultPanelProps {
     confidence?: number;
     error: string | null;
     hasResult: boolean;
+    errorCta?: ReactNode;
 }
 
 const languageNames: Record<string, string> = {
@@ -238,6 +240,7 @@ export function ResultPanel({
     confidence,
     error,
     hasResult,
+    errorCta,
 }: ResultPanelProps) {
     const [fontSize, setFontSize] = useState(16);
     const lastOcrTextRef = useRef("");
@@ -292,6 +295,11 @@ export function ResultPanel({
                         <p className="text-xs text-muted-foreground mt-1.5 max-w-sm">
                             {error}
                         </p>
+                        {errorCta ? (
+                            <div className="mt-4 flex justify-center w-full max-w-sm">
+                                {errorCta}
+                            </div>
+                        ) : null}
                     </div>
                 </div>
             </Card>
