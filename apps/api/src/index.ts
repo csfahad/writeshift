@@ -2,7 +2,10 @@ import express from "express";
 import cors from "cors";
 import { globalLimiter } from "./middleware/rateLimiter";
 import { errorHandler } from "./middleware/errorHandler";
+import { optionalClerkAuth } from "./middleware/clerkAuth";
 import { ocrRouter } from "./routes/ocr";
+import { ocrJobsRouter } from "./routes/ocrJobs";
+import { guestStatusHandler } from "./routes/guestStatus";
 import { exportRouter } from "./routes/export";
 
 const app = express();
@@ -22,6 +25,8 @@ app.get("/api/health", (_req, res) => {
     });
 });
 
+app.get("/api/ocr/guest-status", optionalClerkAuth, guestStatusHandler);
+app.use("/api/ocr/jobs", ocrJobsRouter);
 app.use("/api/ocr", ocrRouter);
 app.use("/api/export", exportRouter);
 
