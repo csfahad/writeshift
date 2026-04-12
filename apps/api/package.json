@@ -5,10 +5,16 @@
     "scripts": {
         "dev": "bun --watch src/index.ts",
         "build": "bun build src/index.ts --outdir ./dist --target node",
-        "setup:fonts": "bun scripts/download-fonts.ts"
+        "setup:fonts": "bun scripts/download-fonts.ts",
+        "db:generate": "drizzle-kit generate",
+        "db:push": "drizzle-kit push",
+        "db:studio": "drizzle-kit studio"
     },
     "dependencies": {
+        "@clerk/backend": "^3.2.8",
+        "@neondatabase/serverless": "^1.0.2",
         "cors": "^2.8.5",
+        "drizzle-orm": "^0.45.2",
         "express": "^5.1.0",
         "express-rate-limit": "^7.5.0",
         "jspdf": "^2.5.2",
@@ -19,7 +25,8 @@
         "@types/bun": "latest",
         "@types/cors": "^2.8.17",
         "@types/express": "^5.0.0",
-        "@types/multer": "^1.4.12"
+        "@types/multer": "^1.4.12",
+        "drizzle-kit": "^0.31.10"
     },
     "peerDependencies": {
         "typescript": "^5"
