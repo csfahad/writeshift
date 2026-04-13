@@ -9,7 +9,7 @@
             content="Transform handwritten notes into clean, editable digital text in seconds. Multilingual support (English & Hindi), real-time image preprocessing, inline editing, and one-click export to TXT, JPG & PDF."
         />
         <meta name="theme-color" content="#fffd33" />
-        <meta property="og:title" content="WriteShift — Handwriting to Text" />
+        <meta property="og:title" content="WriteShift - Handwriting to Text" />
         <meta
             property="og:description"
             content="Transform handwritten notes into clean, editable digital text in seconds. Multilingual support (English & Hindi), real-time image preprocessing, inline editing, and one-click export to TXT, JPG & PDF."
@@ -22,18 +22,6 @@
             rel="stylesheet"
         />
         <title>WriteShift - Handwriting to Text</title>
-        <script>
-            // apply theme before React loads to prevent flash of wrong theme
-            (function () {
-                var t = localStorage.getItem("writeshift-theme");
-                var dark =
-                    t === "dark" ||
-                    (t !== "light" &&
-                        window.matchMedia("(prefers-color-scheme: dark)")
-                            .matches);
-                if (dark) document.documentElement.classList.add("dark");
-            })();
-        </script>
     </head>
     <body>
         <div id="root"></div>

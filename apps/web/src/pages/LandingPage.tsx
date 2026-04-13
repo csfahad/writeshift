@@ -20,7 +20,6 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { useTheme } from "@/hooks/useTheme";
 
 const features = [
     {
@@ -64,20 +63,14 @@ const steps = [
 ] as const;
 
 export function LandingPage() {
-    const { theme, resolvedTheme, toggleTheme } = useTheme();
-
     return (
         <div className="min-h-screen bg-background text-foreground flex flex-col">
-            <Header
-                theme={theme}
-                resolvedTheme={resolvedTheme}
-                onToggleTheme={toggleTheme}
-            />
+            <Header />
 
             <main className="flex-1">
                 {/* Hero */}
                 <section className="relative border-b-2 border-border overflow-hidden">
-                    <div className="absolute inset-0 bg-primary/15 dark:bg-background pointer-events-none" />
+                    <div className="absolute inset-0 bg-primary/15 pointer-events-none" />
                     <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-28">
                         <Badge
                             variant="secondary"
@@ -87,7 +80,7 @@ export function LandingPage() {
                         </Badge>
                         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight max-w-3xl leading-[1.05]">
                             Turn handwriting into{" "}
-                            <span className="bg-primary dark:text-primary-foreground p-1 border-2 border-border shadow-sm inline-block">
+                            <span className="bg-primary p-1 border-2 border-border shadow-sm inline-block">
                                 typed text
                             </span>{" "}
                             you can actually use.

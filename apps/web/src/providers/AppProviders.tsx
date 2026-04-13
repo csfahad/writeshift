@@ -1,19 +1,12 @@
-import { useMemo, type ReactNode } from "react";
+import { type ReactNode } from "react";
 import { ClerkProvider } from "@clerk/clerk-react";
 import { BrowserRouter } from "react-router-dom";
-import { useTheme } from "@/hooks/useTheme";
 import { buildClerkAppearance } from "@/lib/clerkAppearance";
 
 const publishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY ?? "";
+const appearance = buildClerkAppearance();
 
 export function AppProviders({ children }: { children: ReactNode }) {
-    const { resolvedTheme } = useTheme();
-
-    const appearance = useMemo(
-        () => buildClerkAppearance(resolvedTheme),
-        [resolvedTheme],
-    );
-
     if (!publishableKey) {
         return (
             <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-8">

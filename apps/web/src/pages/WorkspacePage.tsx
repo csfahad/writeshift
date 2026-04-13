@@ -16,7 +16,6 @@ import {
     type LoadedOcrJob,
 } from "@/components/OcrHistoryPanel";
 import { useOcr } from "@/hooks/useOcr";
-import { useTheme } from "@/hooks/useTheme";
 import { useGuestId } from "@/hooks/useGuestId";
 import { useGuestOcrStatus } from "@/hooks/useGuestOcrStatus";
 import { Button } from "@/components/ui/button";
@@ -24,7 +23,6 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 
 export function WorkspacePage() {
-    const { theme, resolvedTheme, toggleTheme } = useTheme();
     const { isSignedIn, getToken } = useAuth();
     const guestId = useGuestId();
     const [postSuccessTick, setPostSuccessTick] = useState(0);
@@ -171,11 +169,7 @@ export function WorkspacePage() {
 
     return (
         <div className="min-h-screen bg-background text-foreground flex flex-col">
-            <Header
-                theme={theme}
-                resolvedTheme={resolvedTheme}
-                onToggleTheme={toggleTheme}
-            />
+            <Header />
 
             <main className="flex-1 w-full max-w-6xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
                 <div className="mb-6">
@@ -205,11 +199,11 @@ export function WorkspacePage() {
                                         {guestStatus.remaining === 1
                                             ? "scan"
                                             : "scans"}{" "}
-                                        left — then sign in to keep going.
+                                        left - then sign in to keep going.
                                     </>
                                 ) : (
                                     <>
-                                        Free scans used —{" "}
+                                        Free scans used -{" "}
                                         <Link
                                             to="/sign-in"
                                             className="font-semibold underline text-foreground"
@@ -307,7 +301,7 @@ export function WorkspacePage() {
             </footer>
 
             <Toaster
-                theme={resolvedTheme}
+                theme="light"
                 position="bottom-right"
                 toastOptions={{
                     style: {

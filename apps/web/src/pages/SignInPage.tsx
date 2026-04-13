@@ -1,12 +1,10 @@
 import { SignIn } from "@clerk/clerk-react";
 import { Link } from "react-router-dom";
 import { Header } from "@/components/Header";
-import { useTheme } from "@/hooks/useTheme";
 import { buildClerkAppearance } from "@/lib/clerkAppearance";
 
 export function SignInPage() {
-    const { theme, resolvedTheme, toggleTheme } = useTheme();
-    const baseAppearance = buildClerkAppearance(resolvedTheme);
+    const baseAppearance = buildClerkAppearance();
     const signInAppearance = {
         ...baseAppearance,
         elements: {
@@ -17,11 +15,7 @@ export function SignInPage() {
 
     return (
         <div className="min-h-screen bg-background text-foreground flex flex-col">
-            <Header
-                theme={theme}
-                resolvedTheme={resolvedTheme}
-                onToggleTheme={toggleTheme}
-            />
+            <Header />
             <main className="flex-1 flex flex-col items-center px-4 py-10">
                 <p className="text-sm text-muted-foreground mb-6">
                     <Link
