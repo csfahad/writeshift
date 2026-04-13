@@ -1,44 +1,36 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { FileText, LayoutDashboard } from "lucide-react";
 import { buildClerkAppearance } from "@/lib/clerkAppearance";
-import { Button } from "@/components/ui/button";
 
-interface HeaderProps {
-    theme: "system" | "light" | "dark";
-    resolvedTheme: "light" | "dark";
-    onToggleTheme: () => void;
-}
-
-export function Header({ theme, resolvedTheme, onToggleTheme }: HeaderProps) {
+export function Header() {
     const navigate = useNavigate();
-    const clerkAppearance = buildClerkAppearance(resolvedTheme);
+    const location = useLocation();
+    const clerkAppearance = buildClerkAppearance();
+
+    const isActive = (path: string) => location.pathname === path;
 
     return (
-        <header className="border-b border-border bg-primary backdrop-blur-sm sticky top-0 z-50">
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
-                <div className="flex items-center gap-6 min-w-0">
-                    <Link
-                        to="/"
-                        className="flex items-center gap-3 shrink-0 hover:opacity-90 transition-opacity"
-                    >
-                        <div className="w-9 h-9 bg-primary flex items-center justify-center border-2 border-border shadow-sm">
-                            <FileText className="w-5 h-5 text-primary-foreground" />
-                        </div>
-                        <div className="hidden sm:block min-w-0">
-                            <h1 className="text-lg font-bold tracking-tight leading-tight dark:text-primary-foreground">
-                                WriteShift
-                            </h1>
-                            <p className="text-[10px] text-muted-foreground leading-tight dark:text-muted">
-                                Handwriting → Typed Text
-                            </p>
-                        </div>
-                    </Link>
-                </div>
+        <header className="border-b-2 border-border bg-primary sticky top-0 z-50">
+            <div className="max-w-full mx-auto flex items-stretch h-14">
+                <Link
+                    to="/"
+                    className="flex items-center gap-2.5 px-5 sm:border-r sm:border-border shrink-0 hover:bg-primary/80 transition-colors"
+                >
+                    <div className="w-8 h-8 bg-primary flex items-center justify-center border-2 border-border shadow-sm">
+                        <FileText className="w-4 h-4 text-primary-foreground" />
+                    </div>
+                    <div className="hidden sm:flex sm:items-center min-w-0">
+                        <span className="text-xl font-bold tracking-tight leading-none">
+                            WriteShift
+                        </span>
+                    </div>
+                </Link>
 
-                <div className="flex items-center gap-2 shrink-0">
-                    <SignedIn>
+                <div className="flex-1" />
+
+                <SignedIn>
+                    <div className="flex items-center px-4 border-l border-border">
                         <UserButton appearance={clerkAppearance}>
                             <UserButton.MenuItems>
                                 <UserButton.Action
@@ -52,19 +44,27 @@ export function Header({ theme, resolvedTheme, onToggleTheme }: HeaderProps) {
                                 <UserButton.Action label="signOut" />
                             </UserButton.MenuItems>
                         </UserButton>
-                    </SignedIn>
-                    <SignedOut>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            className="h-8 border-2 border-border bg-background px-3 text-foreground shadow-sm dark:border-border! dark:bg-background! dark:text-foreground!"
-                            asChild
-                        >
-                            <Link to="/sign-in">Sign in</Link>
-                        </Button>
-                    </SignedOut>
-                    <ThemeToggle theme={theme} onToggle={onToggleTheme} />
-                </div>
+                    </div>
+                </SignedIn>
+
+                <SignedOut>
+                    <Link
+                        to="/sign-in"
+                        className={`flex items-center px-5 border-l border-border text-sm font-medium tracking-tight transition-colors hover:bg-accent/60 ${isActive("/sign-in")
+                            ? "bg-accent/40"
+                            : ""
+                            }`}
+                    >
+                        Sign in
+                    </Link>
+
+                    <Link
+                        to="/app"
+                        className="flex items-center px-5 border-l-2 border-border bg-secondary text-secondary-foreground text-sm font-semibold tracking-tight transition-colors hover:bg-secondary/90"
+                    >
+                        Start free
+                    </Link>
+                </SignedOut>
             </div>
         </header>
     );
