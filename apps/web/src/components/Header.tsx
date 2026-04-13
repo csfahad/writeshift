@@ -30,6 +30,12 @@ export function Header() {
                 <div className="flex-1" />
 
                 <SignedIn>
+                    <Link
+                        to="/app"
+                        className="flex items-center px-5 border-l-2 border-border bg-secondary text-secondary-foreground text-sm font-semibold tracking-tight transition-colors hover:bg-secondary/90"
+                    >
+                        Launch Workspace
+                    </Link>
                     <div className="flex items-center px-4 border-l border-border">
                         <UserButton appearance={clerkAppearance}>
                             <UserButton.MenuItems>
