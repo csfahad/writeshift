@@ -42,9 +42,14 @@ export function Header() {
                                 <UserButton.Action
                                     label="Launch workspace"
                                     labelIcon={
-                                        <LayoutDashboard className="h-3 w-3 font-bold" />
+                                        <LayoutDashboard className="h-3 w-3" />
                                     }
                                     onClick={() => navigate("/app")}
+                                />
+                                <UserButton.Action
+                                    label="History"
+                                    labelIcon={<FileText className="h-3 w-3" />}
+                                    onClick={() => navigate("/history")}
                                 />
                                 <UserButton.Action label="manageAccount" />
                                 <UserButton.Action label="signOut" />
@@ -56,9 +61,7 @@ export function Header() {
                 <SignedOut>
                     <Link
                         to="/sign-in"
-                        className={`flex items-center px-5 border-l border-border text-sm font-medium tracking-tight transition-colors hover:bg-accent/60 ${isActive("/sign-in")
-                            ? "bg-accent/40"
-                            : ""
+                        className={`flex items-center px-5 border-l border-border text-sm font-medium tracking-tight transition-colors hover:bg-accent/60 ${isActive("/sign-in") ? "bg-accent/40" : ""
                             }`}
                     >
                         Sign in
