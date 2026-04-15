@@ -1,5 +1,5 @@
-import { useState, useCallback, useEffect, useMemo } from "react";
-import { Link } from "react-router-dom";
+import { useState, useCallback, useEffect, useMemo, useRef } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { useAuth } from "@clerk/clerk-react";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
@@ -11,10 +11,6 @@ import { ProcessButton } from "@/components/ProcessButton";
 import { ResultPanel } from "@/components/ResultPanel";
 import { ExportToolbar } from "@/components/ExportToolbar";
 import { LoadingSkeleton } from "@/components/LoadingSkeleton";
-import {
-    OcrHistoryPanel,
-    type LoadedOcrJob,
-} from "@/components/OcrHistoryPanel";
 import { useOcr } from "@/hooks/useOcr";
 import { useGuestId } from "@/hooks/useGuestId";
 import { useGuestOcrStatus } from "@/hooks/useGuestOcrStatus";
@@ -25,6 +21,7 @@ import { Card, CardContent } from "@/components/ui/card";
 export function WorkspacePage() {
     const { isSignedIn, getToken } = useAuth();
     const guestId = useGuestId();
+    const [searchParams, setSearchParams] = useSearchParams();
     const [postSuccessTick, setPostSuccessTick] = useState(0);
 
     const getTokenForApi = useCallback(() => getToken(), [getToken]);
@@ -67,6 +64,8 @@ export function WorkspacePage() {
     const guestBlocked =
         !isSignedIn && guestStatus !== null && guestStatus.remaining <= 0;
 
+    const loadingHistoryIdRef = useRef<string | null>(null);
+
     const handleFileSelect = useCallback(
         (selectedFile: File) => {
             setFile(selectedFile);
@@ -104,22 +103,57 @@ export function WorkspacePage() {
         }
     }, [file, language, processImage, guestBlocked]);
 
-    const handleLoadHistoryJob = useCallback(
-        (job: LoadedOcrJob) => {
-            hydrateFromHistory({
-                text: job.text,
-                confidence: job.confidence,
-                detectedLanguage: job.detectedLanguage,
-                paragraphs: job.paragraphs,
-            });
-            setEditedText(job.text);
-            setIsEditing(false);
-            toast.success("Loaded saved scan", {
-                description: job.originalFilename,
-            });
-        },
-        [hydrateFromHistory],
-    );
+    useEffect(() => {
+        const historyId = searchParams.get("historyId");
+        if (
+            historyId &&
+            isSignedIn &&
+            loadingHistoryIdRef.current !== historyId
+        ) {
+            loadingHistoryIdRef.current = historyId;
+            const loadJob = async () => {
+                try {
+                    const token = await getTokenForApi();
+                    if (!token) return;
+                    const API_URL = import.meta.env.VITE_API_URL;
+                    const res = await fetch(
+                        `${API_URL}/api/ocr/jobs/${historyId}`,
+                        {
+                            headers: { Authorization: `Bearer ${token}` },
+                        },
+                    );
+                    const data = await res.json();
+                    if (res.ok && data) {
+                        hydrateFromHistory({
+                            text: data.text,
+                            confidence: data.confidence,
+                            detectedLanguage: data.detectedLanguage,
+                            paragraphs: data.paragraphs,
+                        });
+                        setEditedText(data.text);
+                        setIsEditing(false);
+                        toast.success("Loaded saved scan", {
+                            description: data.originalFilename,
+                        });
+                    } else {
+                        toast.error(data.error || "Could not open scan");
+                    }
+                } catch {
+                    toast.error("Could not open scan");
+                } finally {
+                    // remove param from URL
+                    setSearchParams({}, { replace: true });
+                }
+            };
+            void loadJob();
+        }
+    }, [
+        searchParams,
+        setSearchParams,
+        isSignedIn,
+        getTokenForApi,
+        hydrateFromHistory,
+    ]);
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -243,11 +277,6 @@ export function WorkspacePage() {
                             onClick={() => void handleProcess()}
                             disabled={!file || guestBlocked}
                             isLoading={isLoading}
-                        />
-
-                        <OcrHistoryPanel
-                            refreshKey={postSuccessTick}
-                            onLoadJob={handleLoadHistoryJob}
                         />
 
                         {guestBlocked ? (
