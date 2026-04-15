@@ -86,52 +86,53 @@ export function LandingPage() {
                     <BackgroundBeams className="opacity-40" />
                     <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center flex flex-col items-center justify-center h-full">
                         <FadeInSection>
-                            <h1 className="text-5xl sm:text-7xl lg:text-[5rem] font-bold tracking-tight leading-[1.1] mb-2 drop-shadow-sm">
+                            <h1 className="text-[42px] sm:text-7xl lg:text-[5rem] font-bold tracking-tight leading-[1.2] sm:leading-[1.1] mb-3 sm:mb-4 drop-shadow-sm px-2">
                                 Your Handwriting,
                             </h1>
-                            <div className="mb-8 flex justify-center drop-shadow-sm">
-                                <div className="inline-flex items-center px-4 py-1 bg-primary">
+                            <div className="mb-6 sm:mb-8 flex justify-center drop-shadow-sm px-4">
+                                <div className="inline-flex items-center px-3 sm:px-5 py-1 sm:py-2 bg-primary">
                                     <TypewriterEffect
                                         words={typewriterWords}
-                                        className="text-[42px] sm:text-7xl lg:text-[5rem] m-0 leading-[1.1]"
-                                        cursorClassName="bg-blue-500 h-12 sm:h-16 lg:h-[4.5rem] ml-1"
+                                        className="text-4xl sm:text-7xl lg:text-[5rem] m-0 leading-[1.1] sm:leading-[1.1] whitespace-nowrap"
+                                        cursorClassName="bg-blue-500 h-8 sm:h-16 lg:h-[4.5rem] ml-1 sm:ml-2"
                                     />
                                 </div>
                             </div>
 
-                            <p className="mt-6 text-xl sm:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed border-2 border-border p-6 bg-card shadow-md">
-                                Upload any handwritten note <span className="px-1 py-0.5 bg-primary border border-border">English or Hindi</span> and get clean, formatted, downloadable text <span className="font-mono text-sm px-1 py-0.5 bg-primary border border-border">(TXT, JPG, PDF, DOCX)</span> in seconds.
+                            <p className="mt-6 sm:mt-8 text-lg sm:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed px-4 bg-card">
+                                Upload any handwritten note <span className="inline-block px-2 py-0.5 bg-primary border border-border font-semibold text-foreground whitespace-nowrap shadow-sm mx-1 transform -rotate-1">English or Hindi</span> and get clean, formatted, downloadable text <span className="inline-block font-mono text-xs sm:text-sm px-2 py-0.5 bg-primary border border-border font-bold text-foreground whitespace-nowrap shadow-sm mx-1 transform rotate-1">(TXT, JPG, PDF, DOCX)</span> in seconds.
+                                <br className="hidden sm:block" />A workspace for students, founders and anyone tired <br className="hidden sm:block" /> of retyping notes.
                             </p>
 
-                            <div className="mt-12 flex flex-col items-center gap-6">
-                                <Link to="/app" className="group block">
+                            <div className="mt-10 sm:mt-12 flex flex-col items-center gap-6 w-full px-4 sm:px-0">
+                                <Link to="/app" className="group block w-full sm:w-auto">
                                     <HoverBorderGradient
-                                        containerClassName="rounded-none border-2 border-border shadow-[4px_4px_0px_0px_#000] hover:shadow-[2px_2px_0px_0px_#000] transition-all bg-primary"
+                                        containerClassName="rounded-none border-2 border-border shadow-[4px_4px_0px_0px_#000] hover:shadow-[2px_2px_0px_0px_#000] transition-all bg-primary w-full sm:w-auto"
                                         as="div"
-                                        className="bg-primary text-foreground font-bold text-xl px-10 py-5 rounded-none flex items-center gap-3 transition-colors"
+                                        className="bg-primary text-foreground font-bold text-base sm:text-lg md:text-xl px-4 py-3 md:px-8 md:py-4 rounded-none flex items-center justify-center gap-3 transition-colors w-full sm:w-auto"
                                     >
-                                        {isSignedIn ? "Launch Workspace" : "Try Free, No Sign Up Needed"}
-                                        <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+                                        <span className="truncate inline-block">{isSignedIn ? "Launch Workspace" : "Try Free, No Sign up Needed"}</span>
+                                        <ArrowRight className="w-5 h-5 md:w-6 md:h-6 shrink-0 group-hover:translate-x-1 transition-transform" />
                                     </HoverBorderGradient>
                                 </Link>
 
                                 <button
                                     onClick={scrollToDemo}
-                                    className="text-lg font-bold underline decoration-2 underline-offset-8 hover:text-primary transition-colors flex items-center gap-2"
+                                    className="text-base sm:text-lg font-bold underline decoration-2 underline-offset-8 hover:text-primary transition-colors flex items-center gap-2 mt-2 sm:mt-0"
                                 >
-                                    See how it works <ArrowDown className="w-5 h-5" />
+                                    See how it works <ArrowDown className="w-4 h-4 sm:w-5 sm:h-5" />
                                 </button>
                             </div>
 
-                            <div className="mt-16 flex flex-wrap justify-center gap-4 text-sm font-mono font-bold">
-                                <span className="px-4 py-2 border-2 border-border bg-card shadow-sm">3 free scans</span>
-                                <span className="px-4 py-2 border-2 border-border bg-card shadow-sm">No credit card</span>
-                                <span className="px-4 py-2 border-2 border-border bg-card shadow-sm">Hindi + English</span>
+                            <div className="mt-12 sm:mt-16 flex flex-wrap justify-center gap-3 sm:gap-4 text-xs sm:text-sm font-mono font-bold px-4">
+                                <span className="px-3 py-1.5 sm:px-4 sm:py-2 border-2 border-border bg-card shadow-[2px_2px_0px_0px_#000] hover:translate-y-px hover:shadow-[1px_1px_0px_0px_#000] transition-all cursor-default text-center">3 free scans</span>
+                                <span className="px-3 py-1.5 sm:px-4 sm:py-2 border-2 border-border bg-card shadow-[2px_2px_0px_0px_#000] hover:translate-y-px hover:shadow-[1px_1px_0px_0px_#000] transition-all cursor-default text-center">No credit card</span>
+                                <span className="px-3 py-1.5 sm:px-4 sm:py-2 border-2 border-border bg-card shadow-[2px_2px_0px_0px_#000] hover:translate-y-px hover:shadow-[1px_1px_0px_0px_#000] transition-all cursor-default text-center">Hindi + English</span>
                             </div>
                         </FadeInSection>
 
                         {/* Before/after illustration */}
-                        <FadeInSection className="mt-20 flex flex-col md:flex-row items-center justify-center gap-6 max-w-4xl w-full">
+                        <FadeInSection className="mt-20 flex flex-col md:flex-row items-center justify-center gap-6 max-w-4xl w-full px-4 md:px-0">
                             <div className="w-full md:w-5/12 aspect-4/3 bg-muted border-2 border-border shadow-[4px_4px_0px_0px_#000] p-6 -rotate-2 relative flex items-center justify-center">
                                 <div className="absolute top-2 right-2 flex gap-1">
                                     <div className="w-3 h-3 rounded-full border-2 border-border bg-red-400"></div>
@@ -163,12 +164,12 @@ export function LandingPage() {
 
                 {/* How it works section */}
                 <section ref={demoRef} className="border-b border-border bg-muted/30">
-                    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+                    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
                         <FadeInSection>
-                            <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-16 text-center">
+                            <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-12 md:mb-16 text-center">
                                 Three steps. No nonsense.
                             </h2>
-                            <div className="grid md:grid-cols-3 gap-8">
+                            <div className="grid md:grid-cols-3 gap-8 px-4 md:px-0">
                                 {[
                                     { step: "01", title: "Upload", icon: Upload, desc: "Drop your handwritten image or PDF into the workspace." },
                                     { step: "02", title: "Extract", icon: Cpu, desc: "Our AI reads every word, in English or Hindi." },
@@ -194,8 +195,11 @@ export function LandingPage() {
                 </section>
 
                 {/* Feature highlight section */}
-                <section className="border-b-2 border-border bg-background overflow-hidden relative w-full">
-                    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-24 w-full">
+                <section className="border-b-2 border-border bg-background overflow-hidden relative w-full px-4">
+                    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 w-full">
+                        <h2 className="text-4xl md:text-5xl text-center font-bold tracking-tight mb-12 md:mb-16 drop-shadow-sm">
+                            A simple, powerful workspace.
+                        </h2>
                         <FadeInSection className="grid lg:grid-cols-2 gap-16 items-center w-full">
                             <div className="order-2 lg:order-1 relative w-full pt-4">
                                 <div className="absolute inset-0 bg-primary/20 -rotate-3 border-2 border-border scale-[1.02]"></div>
@@ -237,15 +241,13 @@ export function LandingPage() {
                             </div>
 
                             <div className="order-2 w-full">
-                                <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-8 drop-shadow-sm">
-                                    A simple, powerful workspace.
-                                </h2>
+
                                 <ul className="space-y-4 sm:space-y-6 text-base sm:text-lg font-medium w-full">
                                     {[
                                         "Reads English + Hindi handwriting",
-                                        "Powered by Cloud Vision API",
+                                        "Powered by Cloud Vision AI",
                                         "Built-in rich-text Tiptap editor",
-                                        "Download as PDF, JPG, DOCX or copy",
+                                        "Download as PDF, JPG, DOCX or copy as TXT",
                                         "History saved for signed-in users",
                                         "3 free scans — no account needed"
                                     ].map((text, i) => (
@@ -263,10 +265,10 @@ export function LandingPage() {
                 </section>
 
                 {/* Social proofs section */}
-                <section className="bg-primary border-b-2 border-border py-24 px-4 overflow-hidden pattern-dots relative">
+                <section className="bg-primary border-b-2 border-border py-16 md:py-24 px-4 overflow-hidden pattern-dots relative">
                     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
                         <FadeInSection>
-                            <div className="text-center mb-16">
+                            <div className="text-center mb-12 md:mb-16">
                                 <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-primary-foreground mb-4">
                                     You're in good company.
                                 </h2>
@@ -312,15 +314,15 @@ export function LandingPage() {
                 </section>
 
                 {/* Pricing section */}
-                <section className="py-24 border-b-2 border-border bg-muted/20">
+                <section className="py-12 md:py-24 border-b-2 border-border bg-muted/20">
                     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
                         <FadeInSection>
-                            <div className="text-center mb-16">
+                            <div className="text-center mb-12 md:mb-16">
                                 <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">Simple, honest access.</h2>
                                 <p className="text-xl text-muted-foreground font-medium">Use it free right now. Sign in if you want complete managable history.</p>
                             </div>
 
-                            <div className="grid md:grid-cols-2 gap-8 lg:gap-12 max-w-4xl mx-auto">
+                            <div className="grid md:grid-cols-2 gap-8 lg:gap-12 max-w-4xl mx-auto px-2 md:px-0">
                                 {/* FREE TIER */}
                                 <div className="bg-card border-2 border-border flex flex-col shadow-[4px_4px_0px_0px_#000]">
                                     <div className="p-8 border-b-2 border-border bg-blue-100 flex flex-col items-center">
@@ -376,14 +378,14 @@ export function LandingPage() {
                 </section>
 
                 {/* Final CTA section */}
-                <section className="bg-secondary text-secondary-foreground py-28 relative overflow-hidden border-b-2 border-border">
+                <section className="bg-secondary text-secondary-foreground py-14 md:py-28 relative overflow-hidden border-b-2 border-border">
                     <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxMDAnIGhlaWdodD0nMTAwJz48ZmlsdGVyIGlkPSdnJz48ZmVUdXJidWxlbmNlIHR5cGU9J2ZyYWN0YWxOb2lzZScgYmFzZUZyZXF1ZW5jeT0nLjknIG51bU9jdGF2ZXM9JzEnIHN0aXRjaFRpbGVzPSdzdGl0Y2gnLz48L2ZpbHRlcj48cmVjdCB3aWR0aD0nMTAwJScgaGVpZ2h0PScxMDAlJyBmaWx0ZXI9J3VybCgjZyknIG9wYWNpdHk9Jy4wNScvPjwvc3ZnPg==')] opacity-30 mix-blend-overlay"></div>
                     <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
                         <FadeInSection>
                             <h2 className="text-[42px] md:text-7xl font-black tracking-tighter mb-8 lowercase leading-[0.9]">
                                 Stop <span className="text-destructive line-through decoration-4">retyping</span>,<br />Start uploading
                             </h2>
-                            <Link to="/app" className="inline-flex items-center gap-3 bg-primary text-primary-foreground font-bold text-lg md:text-xl px-8 py-4 border-2 border-border shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] hover:shadow-none hover:translate-y-1 transition-all">
+                            <Link to="/app" className="inline-flex items-center gap-3 bg-primary text-primary-foreground font-bold text-lg md:text-xl px-4 py-2 md:px-8 md:py-4 border-2 border-border shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] hover:shadow-none hover:translate-y-1 transition-all">
                                 Try Free Now <ArrowRight className="w-4 h-4 md:w-6 md:h-6" />
                             </Link>
                             <p className="mt-8 font-mono font-bold text-secondary-foreground/60">NO SIGN-UP REQUIRED</p>
@@ -393,7 +395,7 @@ export function LandingPage() {
             </main>
 
             {/* Footer section */}
-            <footer className="bg-background py-16 border-t-4 border-border">
+            <footer className="bg-background py-8 border-t-4 border-border">
                 <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-8 font-bold">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-primary border-2 border-border flex items-center justify-center shadow-sm">
@@ -415,7 +417,7 @@ export function LandingPage() {
                     </div>
 
                     <div className="font-mono text-sm border-2 border-border px-3 py-1 bg-muted">
-                        © {new Date().getFullYear()} WriteShift
+                        ©{new Date().getFullYear()} WriteShift
                     </div>
                 </div>
             </footer>

@@ -11,7 +11,7 @@ export function Header() {
     const isActive = (path: string) => location.pathname === path;
 
     return (
-        <header className="border-b-2 border-border bg-primary sticky top-0 z-50">
+        <header className="border-b-2 border-t-2 md:border-t-0 border-border bg-primary sticky top-0 z-50">
             <div className="max-w-full mx-auto flex items-stretch h-14">
                 <Link
                     to="/"
