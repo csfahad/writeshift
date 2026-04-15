@@ -1,4 +1,4 @@
-import { eq, desc, sql } from "drizzle-orm";
+import { eq, desc, sql, and } from "drizzle-orm";
 import type { Database } from "../db";
 import { ocrJob } from "../db/schema";
 
@@ -105,4 +105,17 @@ export async function getOcrJobForUser(
         detectedLanguage: row.detectedLanguage,
         paragraphs: row.paragraphs as string[],
     };
+}
+
+export async function deleteOcrJobForUser(
+    db: Database,
+    userId: string,
+    jobId: string,
+): Promise<boolean> {
+    const deleted = await db
+        .delete(ocrJob)
+        .where(and(eq(ocrJob.id, jobId), eq(ocrJob.userId, userId)))
+        .returning({ id: ocrJob.id });
+
+    return deleted.length > 0;
 }

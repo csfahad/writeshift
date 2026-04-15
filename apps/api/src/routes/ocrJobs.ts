@@ -4,6 +4,7 @@ import { getDb } from "../db";
 import {
     getOcrJobForUser,
     listOcrJobsForUser,
+    deleteOcrJobForUser,
 } from "../services/ocrPersistence";
 
 export const ocrJobsRouter = Router();
@@ -36,6 +37,29 @@ ocrJobsRouter.get("/:id", async (req, res, next) => {
             return;
         }
         res.json(job);
+    } catch (e) {
+        next(e);
+    }
+});
+
+ocrJobsRouter.delete("/:id", async (req, res, next) => {
+    try {
+        const userId = req.auth!.userId;
+        const { id } = req.params;
+        if (!id) {
+            res.status(400).json({ error: "Job id required" });
+            return;
+        }
+        const db = getDb();
+        const success = await deleteOcrJobForUser(db, userId, id);
+        if (!success) {
+            res.status(404).json({
+                error: "Job not found or already deleted",
+                code: "NOT_FOUND",
+            });
+            return;
+        }
+        res.json({ success: true });
     } catch (e) {
         next(e);
     }
