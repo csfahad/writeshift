@@ -3,8 +3,7 @@
     "tasks": {
         "build": {
             "dependsOn": ["^build"],
-            "outputs": ["dist/**"],
-            "env": ["VITE_CLERK_PUBLISHABLE_KEY", "VITE_API_URL"]
+            "outputs": ["dist/**"]
         },
         "check-types": {
             "dependsOn": ["^check-types"]
